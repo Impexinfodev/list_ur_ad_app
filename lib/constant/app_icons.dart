@@ -21,6 +21,7 @@ class AppIcons {
   static const analysisIc= 'assets/icons/analysisIc.png';
   static const shareIc= 'assets/icons/shareIc.png';
   static const bookmarkIc= 'assets/icons/bookmarkIc.png';
+  static const saveBookmarkIc= 'assets/icons/saveBookmarkIc.png';
 
   static const homeIc= 'assets/icons/homeIc.png';
   static const marketIc= 'assets/icons/marketIc.png';

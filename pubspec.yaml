@@ -52,6 +52,8 @@ dependencies:
   geolocator: ^14.0.2
   geocoding: ^4.0.0
   country_codes: ^3.3.0
+  cached_network_image: ^3.4.1
+  html: ^0.15.6
 
 
 dev_dependencies:

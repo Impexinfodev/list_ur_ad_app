@@ -24,7 +24,9 @@ class _DashboardViewState extends State<DashboardView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DashboardProvider>().onItemTapped(widget.index);
+      final provider = context.read<DashboardProvider>();
+      provider.onItemTapped(widget.index);
+      provider.fetchCategories();
     });
   }
 

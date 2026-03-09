@@ -12,8 +12,8 @@ class RegistrationData {
       "phone": phone ?? "",
       "country_code": countryCode ?? "",
       "privacy_accepted": isPrivacyAccepted ?? false,
-      "languages": selectedLanguages ?? [],
-      "locations": selectedLocations ?? [],
+      "readable_languages": selectedLanguages ?? [],
+      "selected_locations": selectedLocations ?? [],
     };
   }
 }

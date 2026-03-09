@@ -71,7 +71,7 @@ class _LoginViewState extends State<LoginView> {
                         hintText: "Enter Mobile Number",
                         isPhoneNumber: true,
                         onChanged: (value) {
-                          provider.checkPhoneLive(value);
+                          provider.checkPhoneLive(context, value);
                         },
                         validator: (value) {
                           if (value == null || value.isEmpty) return "Required";
@@ -168,7 +168,7 @@ class _LoginViewState extends State<LoginView> {
                             return;
                           }
 
-                          String purpose = provider.phoneExists ? "login" : "register";
+                          String purpose = provider.phoneExists ? "login" : "login";
 
                           await provider.sendOtp(
                             context: context,

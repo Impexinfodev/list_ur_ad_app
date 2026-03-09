@@ -1,13 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:list_ur_add/constant/app_colors.dart';
 import 'package:list_ur_add/constant/app_fonts.dart';
 import 'package:list_ur_add/constant/app_icons.dart';
 import 'package:list_ur_add/modules/ad/model/ad_layout_type.dart';
-import 'package:list_ur_add/modules/dashboard/views/dashboard_view.dart';
-import 'package:list_ur_add/modules/inbox/views/chat_view.dart';
+import 'package:list_ur_add/modules/home/provider/home_provider.dart';
+import 'package:list_ur_add/service/api_logs.dart';
 import 'package:list_ur_add/widgets/ad_widget/text_post_layout.dart';
 import 'package:list_ur_add/widgets/home_widget/action_icon.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,13 +27,18 @@ class JobPostWidget extends StatefulWidget {
   final String? description;
   final String? email;
   final int? likes;
+  final bool? isLiked;
+  final Function()? onLikeTap;
   final int? comments;
   final int? calls;
   final String? analysis;
   final bool? isBookmarked;
+  final Function()? onBookmarkTap;
   final bool? isShared;
+  final Function()? onShareTap;
   final bool? isTranslated;
   final bool? isSponsored;
+  final String? adId;
 
   const JobPostWidget({
     super.key,
@@ -48,13 +55,18 @@ class JobPostWidget extends StatefulWidget {
     this.description,
     this.email,
     this.likes,
+    this.isLiked,
+    this.onLikeTap,
     this.comments,
     this.calls,
     this.analysis,
     this.isBookmarked,
+    this.onBookmarkTap,
     this.isShared,
+    this.onShareTap,
     this.isTranslated,
     this.isSponsored,
+    this.adId,
   });
 
   @override
@@ -62,7 +74,6 @@ class JobPostWidget extends StatefulWidget {
 }
 
 class _JobPostWidgetState extends State<JobPostWidget> {
-  bool isLiked = false;
   bool isTranslated = false;
   bool isCommentSelected = false;
   bool isCommentBoxVisible = false;
@@ -85,8 +96,25 @@ class _JobPostWidgetState extends State<JobPostWidget> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(35.r),
-                child: widget.profileImage != null
-                    ? Image.asset(AppIcons.profileIc, height: 35.h, width: 35.h, fit: BoxFit.cover)
+                child: widget.profileImage != null && widget.profileImage!.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: widget.profileImage!,
+                        height: 35.h,
+                        width: 35.h,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => Image.asset(
+                          AppIcons.profileIc,
+                          height: 35.h,
+                          width: 35.h,
+                          fit: BoxFit.cover,
+                        ),
+                        errorWidget: (context, url, error) => Image.asset(
+                          AppIcons.profileIc,
+                          height: 35.h,
+                          width: 35.h,
+                          fit: BoxFit.cover,
+                        ),
+                      )
                     : Image.asset(AppIcons.profileIc, height: 35.h, width: 35.h, fit: BoxFit.cover),
               ),
               SizedBox(width: 8.w),
@@ -138,7 +166,7 @@ class _JobPostWidgetState extends State<JobPostWidget> {
                         ],
                       ),
                     SizedBox(height: 6.h),
-                    if (widget.layoutType != null) buildLayoutContent(),
+                    buildLayoutContent(),
                     if (_hasAnyAction()) ...[SizedBox(height: 10.h), buildActionRow()],
                   ],
                 ),
@@ -206,7 +234,7 @@ class _JobPostWidgetState extends State<JobPostWidget> {
         return _sideBySideLayout(leftImage: false);
 
       default:
-        return const SizedBox();
+        return buildText();
     }
   }
 
@@ -388,10 +416,10 @@ class _JobPostWidgetState extends State<JobPostWidget> {
       children:
           [
                 GestureDetector(
-                  onTap: onLikeTap,
+                  onTap: widget.onLikeTap,
                   child: ActionIcon(
-                    icon: isLiked ? AppIcons.heartFilledIc : AppIcons.heartIc,
-                    text: ((widget.likes ?? 0) + (isLiked ? 1 : 0)).toString(),
+                    icon: (widget.isLiked ?? false) ? AppIcons.heartFilledIc : AppIcons.heartIc,
+                    text: (widget.likes ?? 0).toString(),
                   ),
                 ),
 
@@ -405,7 +433,7 @@ class _JobPostWidgetState extends State<JobPostWidget> {
 
                 GestureDetector(
                   onTap: onCallTap,
-                  child: ActionIcon(icon: AppIcons.callIc, text: widget.calls.toString()),
+                  child: const ActionIcon(icon: AppIcons.callIc),
                 ),
 
                 GestureDetector(
@@ -414,12 +442,21 @@ class _JobPostWidgetState extends State<JobPostWidget> {
                 ),
 
                 GestureDetector(
-                  onTap: onCallTap,
-                  child: ActionIcon(icon: AppIcons.bookmarkIc, text: widget.calls.toString()),
+                  onTap: widget.onBookmarkTap,
+                  child: ActionIcon(
+                    icon: widget.isBookmarked == true
+                        ? AppIcons.saveBookmarkIc
+                        : AppIcons.bookmarkIc,
+                  ),
                 ),
 
                 GestureDetector(
-                  onTap: onShareTap,
+                  onTap: () async {
+                    final shareUrl = await widget.onShareTap?.call();
+                    if (shareUrl != null && shareUrl.isNotEmpty) {
+                      await Share.share('Check out this ad: $shareUrl');
+                    }
+                  },
                   child: const ActionIcon(icon: AppIcons.shareIc),
                 ),
 
@@ -498,10 +535,6 @@ class _JobPostWidgetState extends State<JobPostWidget> {
     });
   }
 
-  void onShareTap() {
-    Share.share('Check out this job: ${widget.jobTitle ?? ''}');
-  }
-
   Future<void> onCallTap() async {
     const phone = 'tel:+919999999999';
     if (await canLaunchUrl(Uri.parse(phone))) {
@@ -513,12 +546,6 @@ class _JobPostWidgetState extends State<JobPostWidget> {
     setState(() {
       isCommentBoxVisible = !isCommentBoxVisible;
       isCommentSelected = !isCommentSelected;
-    });
-  }
-
-  void onLikeTap() {
-    setState(() {
-      isLiked = !isLiked;
     });
   }
 }

@@ -6,6 +6,7 @@ import 'package:list_ur_add/constant/app_fonts.dart';
 import 'package:list_ur_add/constant/app_icons.dart';
 import 'package:list_ur_add/modules/dashboard/views/dashboard_view.dart';
 import 'package:list_ur_add/routes/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -387,7 +388,9 @@ class CustomDrawer extends StatelessWidget {
                     Expanded(
                       child: CustomButton(
                         buttonName: 'Logout',
-                        onPressed: () {
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.remove("access_token");
                           Navigator.pop(context);
                           Navigator.pushNamedAndRemoveUntil(
                             context,

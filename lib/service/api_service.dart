@@ -38,12 +38,42 @@ class ApiService {
 
   ///loginApi
   static Future<http.Response> login({
+    required String verificationToken,
+    required String phone,
+    required String countryCode,
+  }) async {
+    return await http.post(
+      Uri.parse(ApiUrl.login),
+      headers: {"Content-Type": "application/json", "Accept": "application/json"},
+      body: jsonEncode({
+        "phone": phone,
+        "country_code": countryCode,
+        "verification_token": verificationToken,
+      }),
+    );
+  }
+
+  ///sendOtp
+  static Future<http.Response> sendOtp({
     required String phone,
     required String countryCode,
     required String purpose,
   }) async {
     return await http.post(
       Uri.parse(ApiUrl.sendOtp),
+      headers: {"Content-Type": "application/json", "Accept": "application/json"},
+      body: jsonEncode({"phone": phone, "country_code": countryCode, "purpose": purpose}),
+    );
+  }
+
+  ///loginApi
+  static Future<http.Response> reSendOtp({
+    required String phone,
+    required String countryCode,
+    required String purpose,
+  }) async {
+    return await http.post(
+      Uri.parse(ApiUrl.reSendOtp),
       headers: {"Content-Type": "application/json", "Accept": "application/json"},
       body: jsonEncode({"phone": phone, "country_code": countryCode, "purpose": purpose}),
     );
@@ -93,6 +123,123 @@ class ApiService {
     return await http.get(
       Uri.parse(ApiUrl.locations),
       headers: {"Content-Type": "application/json", "Accept": "application/json"},
+    );
+  }
+
+  ///categories
+  static Future<http.Response> categories() async {
+    return await http.get(
+      Uri.parse(ApiUrl.categories),
+      headers: {"Content-Type": "application/json", "Accept": "application/json"},
+    );
+  }
+
+  ///subCategories
+  static Future<http.Response> subCategories(String categoryId) async {
+    return await http.get(
+      Uri.parse(ApiUrl.subCategories(categoryId)),
+      headers: {"Content-Type": "application/json", "Accept": "application/json"},
+    );
+  }
+
+  /// ads
+  static Future<http.Response> getAds() async {
+    try {
+      String token = await getAccessToken();
+      return await http.get(
+        Uri.parse(ApiUrl.ads),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+    } catch (e) {
+      Log.console("Error(Function getTemplates): $e");
+      rethrow;
+    }
+  }
+
+  /// likes
+  static Future<http.Response> getLikes() async {
+    try {
+      String token = await getAccessToken();
+      return await http.get(
+        Uri.parse(ApiUrl.likes),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+    } catch (e) {
+      Log.console("Error(Function getTemplates): $e");
+      rethrow;
+    }
+  }
+
+  ///likeAd
+  static Future<http.Response> likeAd(String adId) async {
+    String token = await getAccessToken();
+    return await http.post(
+      Uri.parse(ApiUrl.likeAd(adId)),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
+
+  ///unLikeAd
+  static Future<http.Response> unLikeAd(String adId) async {
+    String token = await getAccessToken();
+    return await http.delete(
+      Uri.parse(ApiUrl.likeAd(adId)),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
+
+  ///bookmarkAd
+  static Future<http.Response> bookmarkAd(String adId) async {
+    String token = await getAccessToken();
+    return await http.post(
+      Uri.parse(ApiUrl.bookmarkAd(adId)),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
+
+  ///unBookmarkAd
+  static Future<http.Response> unBookmarkAd(String adId) async {
+    String token = await getAccessToken();
+    return await http.post(
+      Uri.parse(ApiUrl.bookmarkAd(adId)),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
+
+  ///share
+  static Future<http.Response> share(String adId) async {
+    String token = await getAccessToken();
+    return await http.get(
+      Uri.parse(ApiUrl.share(adId)),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
     );
   }
 }

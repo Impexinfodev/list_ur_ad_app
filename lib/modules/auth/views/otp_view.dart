@@ -102,7 +102,14 @@ class _OtpViewState extends State<OtpView> {
                       Align(
                         alignment: Alignment.topRight,
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            provider.reSendOtp(
+                              context: context,
+                              phone: widget.phone,
+                              countryCode: widget.countryCode,
+                              purpose: widget.purpose,
+                            );
+                          },
                           child: Text(
                             'Resend OTP?',
                             style: TextStyle(

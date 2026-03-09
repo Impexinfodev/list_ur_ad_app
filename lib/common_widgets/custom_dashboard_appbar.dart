@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:list_ur_add/constant/app_colors.dart';
 import 'package:list_ur_add/constant/app_icons.dart';
 import 'package:list_ur_add/constant/app_fonts.dart';
@@ -37,19 +38,39 @@ class CustomDashboardAppBar extends StatelessWidget implements PreferredSizeWidg
                 children: [
                   GestureDetector(
                     onTap: () => scaffoldKey.currentState!.openDrawer(),
-                    child: Image.asset(AppIcons.profileIc, height: 40, width: 40, fit: BoxFit.cover),
+                    child: Image.asset(
+                      AppIcons.profileIc,
+                      height: 40,
+                      width: 40,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: CustomTextField(
-                      leading: Image.asset(AppIcons.searchIc, height: 20, width: 20, fit: BoxFit.cover),
+                      leading: Image.asset(
+                        AppIcons.searchIc,
+                        height: 20,
+                        width: 20,
+                        fit: BoxFit.cover,
+                      ),
                       hintText: 'Search here',
                       leading1: Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Image.asset(AppIcons.googleMicIc, height: 20, width: 20, fit: BoxFit.contain),
-                          Image.asset(AppIcons.googleLensIc, height: 20, width: 20, fit: BoxFit.contain),
+                          Image.asset(
+                            AppIcons.googleMicIc,
+                            height: 20,
+                            width: 20,
+                            fit: BoxFit.contain,
+                          ),
+                          Image.asset(
+                            AppIcons.googleLensIc,
+                            height: 20,
+                            width: 20,
+                            fit: BoxFit.contain,
+                          ),
                         ],
                       ),
                     ),
@@ -57,7 +78,12 @@ class CustomDashboardAppBar extends StatelessWidget implements PreferredSizeWidg
                   const SizedBox(width: 12),
                   Image.asset(AppIcons.locationOnIc, height: 22, width: 22, fit: BoxFit.contain),
                   const SizedBox(width: 12),
-                  Image.asset(AppIcons.translateSelectedIc, height: 22, width: 22, fit: BoxFit.contain),
+                  Image.asset(
+                    AppIcons.translateSelectedIc,
+                    height: 22,
+                    width: 22,
+                    fit: BoxFit.contain,
+                  ),
                 ],
               ),
               const SizedBox(height: 11),
@@ -99,9 +125,23 @@ class CustomDashboardAppBar extends StatelessWidget implements PreferredSizeWidg
                       ),
                       child: Column(
                         children: [
-                          Text('Today', style: TextStyle(fontSize: 8, fontFamily: AppFonts.medium, color: AppColors.clr687684)),
+                          Text(
+                            'Today',
+                            style: TextStyle(
+                              fontSize: 8,
+                              fontFamily: AppFonts.medium,
+                              color: AppColors.clr687684,
+                            ),
+                          ),
                           const SizedBox(height: 1),
-                          Text('23', style: TextStyle(fontSize: 14, fontFamily: AppFonts.medium, color: AppColors.clr2388FF)),
+                          Text(
+                            '23',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: AppFonts.medium,
+                              color: AppColors.clr2388FF,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -127,7 +167,14 @@ class CustomDashboardAppBar extends StatelessWidget implements PreferredSizeWidg
                       ),
                       child: Column(
                         children: [
-                          Text('Alert', style: TextStyle(fontSize: 8, fontFamily: AppFonts.medium, color: AppColors.clr687684)),
+                          Text(
+                            'Alert',
+                            style: TextStyle(
+                              fontSize: 8,
+                              fontFamily: AppFonts.medium,
+                              color: AppColors.clr687684,
+                            ),
+                          ),
                           const SizedBox(height: 1),
                           Image.asset(AppIcons.bellIc, height: 16, width: 16, fit: BoxFit.contain),
                         ],
@@ -138,26 +185,41 @@ class CustomDashboardAppBar extends StatelessWidget implements PreferredSizeWidg
                   Expanded(
                     child: SizedBox(
                       height: 44,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: provider.categories.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (_) => CategoryDialog(
-                                  categories: const ['Jobs','Matrimony','Obituary','Rent','Notice','New Category'],
-                                  onSelect: (value) {
-                                    provider.selectedCategory = value;
-                                  },
-                                ),
-                              );
-                            },
-                            child: CategoryChip(title: provider.selectedCategory ?? 'Select Category'),
-                          );
-                        },
-                      ),
+                      child: provider.isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: provider.categories.length,
+                              itemBuilder: (context, index) {
+                                final category = provider.categories[index];
+
+                                return Padding(
+                                  padding: EdgeInsets.only(right: 6.w),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (_) => CategoryDialog(
+                                          categories: provider.categories
+                                              .map((e) => e.name)
+                                              .toList(),
+                                          onSelect: (value) {
+                                            final selected = provider.categories.firstWhere(
+                                              (element) => element.name == value,
+                                            );
+                                            provider.setSelectedCategory(value);
+                                            provider.fetchSubCategories(selected.id);
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    child: CategoryChip(
+                                      title: provider.selectedCategory ?? category.name,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                     ),
                   ),
                 ],

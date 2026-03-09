@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:list_ur_add/constant/app_colors.dart';
 import 'package:list_ur_add/modules/auth/provider/auth_provider.dart';
 import 'package:list_ur_add/modules/dashboard/provider/dashboard_provider.dart';
+import 'package:list_ur_add/modules/home/provider/home_provider.dart';
 import 'package:list_ur_add/modules/inbox/provider/chat_provider.dart';
 import 'package:list_ur_add/modules/language_selected/provider/language_provider.dart';
 import 'package:list_ur_add/modules/splash/provider/splash_provider.dart';
@@ -61,6 +62,7 @@ class MyApp extends StatelessWidget {
               ChangeNotifierProvider(create: (_) => LanguageProvider()),
               ChangeNotifierProvider(create: (_) => AuthProvider()),
               ChangeNotifierProvider(create: (_) => DashboardProvider()),
+              ChangeNotifierProvider(create: (_) => HomeProvider()),
               ChangeNotifierProvider(create: (_) => ChatProvider()),
               ChangeNotifierProvider(create: (_) => SupportProvider()),
             ],

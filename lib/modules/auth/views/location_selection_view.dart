@@ -14,6 +14,7 @@ import 'package:list_ur_add/modules/auth/provider/auth_provider.dart';
 import 'package:list_ur_add/modules/auth/views/otp_view.dart';
 import 'package:list_ur_add/routes/routes.dart';
 import 'package:list_ur_add/service/api_logs.dart';
+import 'package:list_ur_add/util/utils.dart';
 import 'package:provider/provider.dart';
 
 class LocationSelectionView extends StatefulWidget {
@@ -70,22 +71,17 @@ class _LocationSelectionViewState extends State<LocationSelectionView> {
                     buttonName: 'Continue',
                     onPressed: () async {
                       final provider = Provider.of<AuthProvider>(context, listen: false);
-                      provider.setLocations(
-                        provider.selectedLocations.map((e) => e.id).toList(),
-                      );
 
+                      provider.applySelection();
+                      provider.setLocations(provider.selectedLocations.map((e) => e.id).toList());
                       provider.registrationData.name = "User";
                       provider.registrationData.phone = provider.phoneNumber;
                       provider.registrationData.countryCode = provider.countryCode;
                       provider.registrationData.isPrivacyAccepted = true;
-
                       if (provider.tempToken == null || provider.tempToken!.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Verification token missing!')),
-                        );
+                        errorToast(context, 'Verification token missing!');
                         return;
                       }
-
                       await provider.registerUser(context);
                     },
                   ),

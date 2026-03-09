@@ -13,7 +13,9 @@ import 'package:list_ur_add/modules/auth/views/otp_view.dart';
 import 'package:list_ur_add/routes/routes.dart';
 import 'package:list_ur_add/service/api_logs.dart';
 import 'package:list_ur_add/service/api_service.dart';
+import 'package:list_ur_add/util/utils.dart';
 import 'package:phone_numbers_parser/phone_numbers_parser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
   List<LanguageModel> languages = [];
@@ -138,16 +140,15 @@ class AuthProvider with ChangeNotifier {
 
       if (data["success"] == true) {
         Log.console("Register Success! Navigating to Home");
-        Navigator.pushNamed(context, AppRoutes.home);
+        successToast(context, data["message"]);
+        Navigator.pushNamed(context, AppRoutes.dashboard);
       } else {
         Log.console("Register Failed: ${data["message"]}");
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(data["message"] ?? "Registration failed")));
+        errorToast(context, data["message"]);
       }
     } catch (e) {
       Log.console("Register Error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      errorToast(context, "Error: $e");
     }
 
     isLoading = false;
@@ -167,7 +168,7 @@ class AuthProvider with ChangeNotifier {
     isLoading = true;
     notifyListeners();
     try {
-      final response = await ApiService.login(
+      final response = await ApiService.sendOtp(
         phone: phoneNumber,
         countryCode: countryCode,
         purpose: purpose,
@@ -175,15 +176,51 @@ class AuthProvider with ChangeNotifier {
       final data = jsonDecode(response.body);
       if (data["success"] == true) {
         Log.console(response.body);
+        successToast(context, data["message"]);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => OtpView(phone: phone, countryCode: countryCode, purpose: 'login'),
           ),
         );
+      } else {
+        Log.console(response.body);
       }
     } catch (e) {
       Log.console("Send OTP Error: $e");
+      errorToast(context, '');
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> reSendOtp({
+    required BuildContext context,
+    required String phone,
+    required String countryCode,
+    required String purpose,
+  }) async {
+    phoneNumber = phone;
+    this.countryCode = countryCode;
+    if (!validatePhoneNumber()) return;
+    isLoading = true;
+    notifyListeners();
+    try {
+      final response = await ApiService.reSendOtp(
+        phone: phoneNumber,
+        countryCode: countryCode,
+        purpose: purpose,
+      );
+      final data = jsonDecode(response.body);
+      if (data["success"] == true) {
+        Log.console(response.body);
+        successToast(context, data["message"]);
+      } else {
+        errorToast(context, data["message"]);
+      }
+    } catch (e) {
+      Log.console("Resend OTP Error: $e");
+      errorToast(context, "Something went wrong. Please try again.");
     }
     isLoading = false;
     notifyListeners();
@@ -203,11 +240,14 @@ class AuthProvider with ChangeNotifier {
       final data = jsonDecode(response.body);
       Log.console(response.body);
       if (data["success"] == true && data["data"] != null) {
+        successToast(context, data["message"]);
         final token = data["data"]["verification_token"];
         if (token != null) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString("verification_token", token);
           tempToken = token;
           if (phoneExists) {
-            Navigator.pushNamed(context, AppRoutes.advertisement);
+            login(context);
           } else {
             Navigator.pushNamed(context, AppRoutes.languageSelection);
           }
@@ -216,12 +256,51 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       Log.console("Verify OTP Error: $e");
     }
-
     isLoading = false;
     notifyListeners();
   }
 
-  Future<void> checkPhoneLive(String phone) async {
+  Future<String?> getVerificationToken() async {
+    if (tempToken != null) return tempToken;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    tempToken = prefs.getString("verification_token");
+    return tempToken;
+  }
+
+  Future<void> login(BuildContext context) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      final token = await getVerificationToken();
+      if (token == null) {
+        errorToast(context, "Verification token missing");
+        return;
+      }
+      final response = await ApiService.login(
+        verificationToken: token,
+        phone: phoneNumber,
+        countryCode: countryCode,
+      );
+      final data = jsonDecode(response.body);
+      Log.console("Login Response: ${response.body}");
+      if (data["success"] == true) {
+        String accessToken = data["data"]["tokens"]["access_token"];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString("access_token", accessToken);
+        successToast(context, data["message"]);
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.dashboard, (route) => false);
+      } else {
+        errorToast(context, data["message"]);
+      }
+    } catch (e) {
+      Log.console("Login Error: $e");
+      errorToast(context, "Login failed");
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> checkPhoneLive(BuildContext context, String phone) async {
     if (debounce?.isActive ?? false) debounce!.cancel();
     debounce = Timer(const Duration(milliseconds: 600), () async {
       if (phone.length < 10) return;
@@ -232,6 +311,7 @@ class AuthProvider with ChangeNotifier {
         final data = jsonDecode(response.body);
         Log.console(data);
         if (data["success"] == true) {
+          successToast(context, data["message"]);
           phoneExists = data["data"]["exists"] ?? false;
           onboardingCompleted = data["data"]["onboarding_completed"];
         }

@@ -39,12 +39,7 @@ class CategoryChip extends StatelessWidget {
             ),
           ),
           SizedBox(width: 24.w),
-          Image.asset(
-            AppIcons.filterIc,
-            height: 14.h,
-            width: 14.w,
-            fit: BoxFit.contain,
-          ),
+          Image.asset(AppIcons.filterIc, height: 14.h, width: 14.w, fit: BoxFit.contain),
         ],
       ),
     );

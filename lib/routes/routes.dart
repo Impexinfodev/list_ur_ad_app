@@ -21,6 +21,7 @@ import 'package:list_ur_add/modules/language_selected/views/language_selected_vi
 import 'package:list_ur_add/modules/payment/views/payment_history_view.dart';
 import 'package:list_ur_add/modules/profile/views/profile_view.dart';
 import 'package:list_ur_add/modules/setting/views/setting_view.dart';
+import 'package:list_ur_add/modules/splash/views/splash_screen.dart';
 import 'package:list_ur_add/modules/splash/views/splash_view.dart';
 import 'package:list_ur_add/modules/splash/views/splash_view.dart';
 import 'package:list_ur_add/modules/support/views/support_view.dart';
