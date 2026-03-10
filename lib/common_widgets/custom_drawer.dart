@@ -46,7 +46,7 @@ class CustomDrawer extends StatelessWidget {
         image: AppIcons.drawerNotificationIc,
         title: 'Notifications',
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardView(index: 2)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardView(index: 3)));
         },
       ),
       OtherInfo(

@@ -8,6 +8,8 @@ import 'package:list_ur_add/modules/dashboard/provider/dashboard_provider.dart';
 import 'package:list_ur_add/modules/home/provider/home_provider.dart';
 import 'package:list_ur_add/modules/inbox/provider/chat_provider.dart';
 import 'package:list_ur_add/modules/language_selected/provider/language_provider.dart';
+import 'package:list_ur_add/modules/notifications/provider/notification_provider.dart';
+import 'package:list_ur_add/modules/profile/provider/profile_provider.dart';
 import 'package:list_ur_add/modules/splash/provider/splash_provider.dart';
 import 'package:list_ur_add/modules/splash/views/splash_view.dart';
 import 'package:list_ur_add/modules/support/provider/support_provider.dart';
@@ -65,6 +67,8 @@ class MyApp extends StatelessWidget {
               ChangeNotifierProvider(create: (_) => HomeProvider()),
               ChangeNotifierProvider(create: (_) => ChatProvider()),
               ChangeNotifierProvider(create: (_) => SupportProvider()),
+              ChangeNotifierProvider(create: (_) => NotificationProvider()),
+              ChangeNotifierProvider(create: (_) => ProfileProvider()),
             ],
             child: MaterialApp(
               title: 'List Ur Ad',

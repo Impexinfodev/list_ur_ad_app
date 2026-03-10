@@ -1,6 +1,6 @@
 class ApiUrl {
   // static const String baseUrl = "https://api.listurad.aashita.ai";
-  static const String baseUrl = "http://192.168.1.16:8000";
+  static const String baseUrl = "http://192.168.1.18:8000";
 
   static const register = "$baseUrl/api/v1/auth/register";
   static const login = "$baseUrl/api/v1/auth/login";
@@ -21,6 +21,15 @@ class ApiUrl {
 
   static String bookmarkAd(String adId) => "$baseUrl/api/v1/ads/$adId/bookmark";
   static String share(String adId) => "$baseUrl/api/v1/ads/$adId/share";
+
+  static const notification = "$baseUrl/api/v1/notifications";
+  static const readAllNotification = "$baseUrl/api/v1/notifications/read-all";
+  static const unreadCountNotification = "$baseUrl/api/v1/notifications/unread-count";
+  static String deleteNotification(String notificationId) => "$baseUrl/api/v1/notifications/$notificationId";
+
+  static const alerts = "$baseUrl/api/v1/alerts";
+  static const profile = "$baseUrl/api/v1/users/me";
+
 
 
 

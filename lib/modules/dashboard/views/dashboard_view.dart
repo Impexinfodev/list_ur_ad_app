@@ -5,6 +5,7 @@ import 'package:list_ur_add/common_widgets/fab_bottom_appbar_item.dart';
 import 'package:list_ur_add/constant/app_colors.dart';
 import 'package:list_ur_add/constant/app_icons.dart';
 import 'package:list_ur_add/modules/dashboard/provider/dashboard_provider.dart';
+import 'package:list_ur_add/modules/notifications/provider/notification_provider.dart';
 import 'package:provider/provider.dart';
 
 class DashboardView extends StatefulWidget {
@@ -34,6 +35,8 @@ class _DashboardViewState extends State<DashboardView> {
   Widget build(BuildContext context) {
     return Consumer<DashboardProvider>(
       builder: (context, provider, child) {
+        final notificationProvider = context.watch<NotificationProvider>();
+
         return PageView(
           physics: const NeverScrollableScrollPhysics(),
           children: [
@@ -63,7 +66,11 @@ class _DashboardViewState extends State<DashboardView> {
                         FABBottomAppBarItem(image: AppIcons.homeIc, text: 'Home'),
                         FABBottomAppBarItem(image: AppIcons.commentIc, text: 'Inbox'),
                         FABBottomAppBarItem(image: AppIcons.marketIc, text: 'Market'),
-                        FABBottomAppBarItem(image: AppIcons.notificationIc, text: 'Notification'),
+                        FABBottomAppBarItem(
+                          image: AppIcons.notificationIc,
+                          text: 'Notification',
+                          badgeCount: notificationProvider.unreadCount,
+                        ),
                       ],
                     ),
                   ],

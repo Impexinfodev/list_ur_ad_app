@@ -3,14 +3,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:list_ur_add/constant/app_colors.dart';
 import 'package:list_ur_add/constant/app_fonts.dart';
 import 'package:list_ur_add/modules/dashboard/provider/dashboard_provider.dart';
+import 'package:list_ur_add/modules/notifications/provider/notification_provider.dart';
 import 'package:list_ur_add/widgets/ad_widget/ad_terms_sheet.dart';
 import 'package:provider/provider.dart';
 
 class FABBottomAppBarItem {
   final String image;
   final String text;
+  final int badgeCount;
 
-  FABBottomAppBarItem({required this.image, required this.text});
+  FABBottomAppBarItem({required this.image, required this.text, this.badgeCount = 0});
 }
 
 class FABBottomAppBar extends StatelessWidget {
@@ -69,6 +71,7 @@ class FABBottomAppBar extends StatelessWidget {
               }
               final itemIndex = index > items.length ~/ 2 ? index - 1 : index;
               return _buildTabItem(
+                context: context,
                 provider: provider,
                 item: items[itemIndex],
                 index: itemIndex,
@@ -83,6 +86,7 @@ class FABBottomAppBar extends StatelessWidget {
   }
 
   Widget _buildTabItem({
+    required BuildContext context,
     required DashboardProvider provider,
     required FABBottomAppBarItem item,
     required int index,
@@ -96,14 +100,49 @@ class FABBottomAppBar extends StatelessWidget {
         child: Material(
           type: MaterialType.transparency,
           child: InkWell(
-            onTap: () {
+            onTap: () async {
               provider.onItemTapped(index);
+              if (item.text.toLowerCase() == 'notification') {
+                final notificationProvider = Provider.of<NotificationProvider>(
+                  context,
+                  listen: false,
+                );
+                await notificationProvider.readAllNotifications();
+              }
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset(item.image, height: iconSize.h, width: iconSize.w, color: color),
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Image.asset(item.image, height: iconSize.h, width: iconSize.w, color: color),
+                    if (item.badgeCount > 0)
+                      Positioned(
+                        right: -6,
+                        top: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                          child: Center(
+                            child: Text(
+                              item.badgeCount > 9 ? "9+" : item.badgeCount.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
                 SizedBox(height: 4.h),
                 Text(
                   item.text,

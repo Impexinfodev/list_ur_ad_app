@@ -242,4 +242,82 @@ class ApiService {
       },
     );
   }
+
+  ///notification
+  static Future<http.Response> notification() async {
+    String token = await getAccessToken();
+    return await http.get(
+      Uri.parse(ApiUrl.notification),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
+
+  ///readAllNotification
+  static Future<http.Response> readAllNotification() async {
+    String token = await getAccessToken();
+    return await http.patch(
+      Uri.parse(ApiUrl.readAllNotification),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
+
+  ///unreadCountNotification
+  static Future<http.Response> unreadCountNotification() async {
+    String token = await getAccessToken();
+    return await http.get(
+      Uri.parse(ApiUrl.unreadCountNotification),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
+
+  ///deleteNotification
+  static Future<http.Response> deleteNotification(String notificationId) async {
+    String token = await getAccessToken();
+    return await http.delete(
+      Uri.parse(ApiUrl.deleteNotification(notificationId)),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
+
+  ///alerts
+  static Future<http.Response> alerts() async {
+    String token = await getAccessToken();
+    return await http.get(
+      Uri.parse(ApiUrl.alerts),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
+
+  ///alerts
+  static Future<http.Response> getProfile() async {
+    String token = await getAccessToken();
+    return await http.get(
+      Uri.parse(ApiUrl.profile),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+  }
 }
