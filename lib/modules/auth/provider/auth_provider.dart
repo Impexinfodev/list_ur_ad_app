@@ -227,9 +227,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> verifyOtp(BuildContext context, String phone, String countryCode, String otp) async {
-    isLoading = true;
     notifyListeners();
-
     try {
       final response = await ApiService.otpVerification(
         phone: phone,
@@ -256,7 +254,6 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       Log.console("Verify OTP Error: $e");
     }
-    isLoading = false;
     notifyListeners();
   }
 

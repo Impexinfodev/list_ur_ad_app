@@ -13,18 +13,12 @@ class CategoryChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(right: 8.w),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(1000.r),
         border: Border.all(color: AppColors.clrF1F3F7, width: 1.6.w),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.clr2388FF.withOpacity(0.10),
-            blurRadius: 6,
-            offset: const Offset(0, 0),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: AppColors.clr2388FF.withOpacity(0.10), blurRadius: 6, offset: const Offset(0, 0))],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -32,14 +26,14 @@ class CategoryChip extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontSize: 14.sp,
+              fontSize: 12.sp,
               fontFamily: AppFonts.semibold,
               color: AppColors.clr687684,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(width: 24.w),
-          Image.asset(AppIcons.filterIc, height: 14.h, width: 14.w, fit: BoxFit.contain),
+          SizedBox(width: 20.w),
+          Image.asset(AppIcons.filterIc, height: 12.h, width: 12.w, fit: BoxFit.contain),
         ],
       ),
     );

@@ -32,11 +32,7 @@ class AdTypeCard extends StatelessWidget {
           children: [
             _buildAdPreview(),
             SizedBox(height: 12.h),
-            CustomButton(
-              buttonName: '${ad.price} Select',
-              onPressed: () {},
-              backgroundColor: AppColors.clr7EB9FF,
-            ),
+            CustomButton(buttonName: '${ad.price} Select', onPressed: () {}, backgroundColor: AppColors.clr7EB9FF),
           ],
         ),
       ),
@@ -50,11 +46,7 @@ class AdTypeCard extends StatelessWidget {
           children: [
             Text(
               ad.title ?? '',
-              style: TextStyle(
-                color: AppColors.clr1289FF,
-                fontSize: 13.sp,
-                fontFamily: AppFonts.medium,
-              ),
+              style: TextStyle(color: AppColors.clr1289FF, fontSize: 13.sp, fontFamily: AppFonts.medium),
             ),
             SizedBox(height: 8.h),
             _textLines(),
@@ -66,19 +58,12 @@ class AdTypeCard extends StatelessWidget {
           children: [
             Text(
               ad.title ?? '',
-              style: TextStyle(
-                color: AppColors.clr1289FF,
-                fontSize: 13.sp,
-                fontFamily: AppFonts.medium,
-              ),
+              style: TextStyle(color: AppColors.clr1289FF, fontSize: 13.sp, fontFamily: AppFonts.medium),
             ),
             SizedBox(height: 8.h),
             Container(
               padding: EdgeInsets.all(8.w),
-              decoration: BoxDecoration(
-                color: AppColors.clrF1F980,
-                borderRadius: BorderRadius.circular(6.r),
-              ),
+              decoration: BoxDecoration(color: AppColors.clrF1F980, borderRadius: BorderRadius.circular(6.r)),
               child: _clrTextLines(),
             ),
           ],
@@ -89,19 +74,12 @@ class AdTypeCard extends StatelessWidget {
           children: [
             Text(
               ad.title ?? '',
-              style: TextStyle(
-                color: AppColors.clr1289FF,
-                fontSize: 13.sp,
-                fontFamily: AppFonts.medium,
-              ),
+              style: TextStyle(color: AppColors.clr1289FF, fontSize: 13.sp, fontFamily: AppFonts.medium),
             ),
             SizedBox(height: 8.h),
             Container(
               padding: EdgeInsets.all(8.w),
-              decoration: BoxDecoration(
-                color: AppColors.clrFFC0F2,
-                borderRadius: BorderRadius.circular(6.r),
-              ),
+              decoration: BoxDecoration(color: AppColors.clrFFC0F2, borderRadius: BorderRadius.circular(6.r)),
               child: _clrTextLines(),
             ),
           ],
@@ -126,11 +104,7 @@ class AdTypeCard extends StatelessWidget {
               children: [
                 Text(
                   ad.title ?? '',
-                  style: TextStyle(
-                    color: AppColors.clr1289FF,
-                    fontSize: 13.sp,
-                    fontFamily: AppFonts.medium,
-                  ),
+                  style: TextStyle(color: AppColors.clr1289FF, fontSize: 13.sp, fontFamily: AppFonts.medium),
                 ),
                 SizedBox(width: 11.w),
                 Expanded(
@@ -157,11 +131,7 @@ class AdTypeCard extends StatelessWidget {
                 children: [
                   Text(
                     ad.title ?? '',
-                    style: TextStyle(
-                      color: AppColors.clr1289FF,
-                      fontSize: 13.sp,
-                      fontFamily: AppFonts.medium,
-                    ),
+                    style: TextStyle(color: AppColors.clr1289FF, fontSize: 13.sp, fontFamily: AppFonts.medium),
                   ),
                   SizedBox(height: 8.h),
                   _textLines(
@@ -196,11 +166,7 @@ class AdTypeCard extends StatelessWidget {
                 children: [
                   Text(
                     ad.title ?? '',
-                    style: TextStyle(
-                      color: AppColors.clr1289FF,
-                      fontSize: 13.sp,
-                      fontFamily: AppFonts.medium,
-                    ),
+                    style: TextStyle(color: AppColors.clr1289FF, fontSize: 13.sp, fontFamily: AppFonts.medium),
                   ),
                   SizedBox(height: 8.h),
                   _textLines(
@@ -223,16 +189,10 @@ class AdTypeCard extends StatelessWidget {
     }
   }
 
-  Widget _textLines({
-    int lineCount = 4,
-    List<double>? lineWidths,
-    List<Alignment>? lineAlignments,
-  }) {
+  Widget _textLines({int lineCount = 4, List<double>? lineWidths, List<Alignment>? lineAlignments}) {
     return Column(
       children: List.generate(lineCount, (index) {
-        final double widthFactor = lineWidths != null && index < lineWidths.length
-            ? lineWidths[index]
-            : 1.0;
+        final double widthFactor = lineWidths != null && index < lineWidths.length ? lineWidths[index] : 1.0;
 
         final Alignment alignment = lineAlignments != null && index < lineAlignments.length
             ? lineAlignments[index]
@@ -246,10 +206,7 @@ class AdTypeCard extends StatelessWidget {
             alignment: alignment,
             widthFactor: widthFactor,
             child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.clrD7E3F9,
-                borderRadius: BorderRadius.circular(100.r),
-              ),
+              decoration: BoxDecoration(color: AppColors.clrD7E3F9, borderRadius: BorderRadius.circular(100.r)),
             ),
           ),
         );
@@ -264,37 +221,26 @@ class AdTypeCard extends StatelessWidget {
         (index) => Container(
           margin: EdgeInsets.symmetric(vertical: 4.h),
           height: 6.h,
-          decoration: BoxDecoration(
-            color: AppColors.clr8D97B7,
-            borderRadius: BorderRadius.circular(100.r),
-          ),
+          decoration: BoxDecoration(color: AppColors.clr8D97B7, borderRadius: BorderRadius.circular(100.r)),
         ),
       ),
     );
   }
 
   Widget _imageBox({double? height}) {
-    final bool showTitle =
-        ad.layoutType == AdLayoutType.imageOnly || ad.layoutType == AdLayoutType.imageWithText;
+    final bool showTitle = ad.layoutType == AdLayoutType.imageOnly || ad.layoutType == AdLayoutType.imageWithText;
 
     return Container(
       padding: EdgeInsets.all(6.w),
       width: double.infinity,
       height: height ?? 80.h,
-      decoration: BoxDecoration(
-        color: AppColors.clrCFE4FD,
-        borderRadius: BorderRadius.circular(4.r),
-      ),
+      decoration: BoxDecoration(color: AppColors.clrCFE4FD, borderRadius: BorderRadius.circular(4.r)),
       child: showTitle
           ? Align(
               alignment: Alignment.topLeft,
               child: Text(
                 ad.title ?? '',
-                style: TextStyle(
-                  color: AppColors.clr1289FF,
-                  fontSize: 13.sp,
-                  fontFamily: AppFonts.medium,
-                ),
+                style: TextStyle(color: AppColors.clr1289FF, fontSize: 13.sp, fontFamily: AppFonts.medium),
               ),
             )
           : const SizedBox.shrink(),

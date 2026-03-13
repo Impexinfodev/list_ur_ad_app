@@ -83,11 +83,15 @@ class _JobPostWidgetState extends State<JobPostWidget> {
     if (widget.layoutType == AdLayoutType.textOnly ||
         widget.layoutType == AdLayoutType.yellowText ||
         widget.layoutType == AdLayoutType.pinkText) {
-      return TextPostLayout(backgroundColor: getTextBg(widget.layoutType));
+      return TextPostLayout(
+        backgroundColor: getTextBg(widget.layoutType),
+        text: widget.description ?? '',
+        highlightText: widget.email,
+      );
     }
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 16.h),
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 10.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -102,57 +106,46 @@ class _JobPostWidgetState extends State<JobPostWidget> {
                         height: 35.h,
                         width: 35.h,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Image.asset(
-                          AppIcons.profileIc,
-                          height: 35.h,
-                          width: 35.h,
-                          fit: BoxFit.cover,
-                        ),
-                        errorWidget: (context, url, error) => Image.asset(
-                          AppIcons.profileIc,
-                          height: 35.h,
-                          width: 35.h,
-                          fit: BoxFit.cover,
-                        ),
+                        placeholder: (context, url) =>
+                            Image.asset(AppIcons.profileIc, height: 35.h, width: 35.h, fit: BoxFit.cover),
+                        errorWidget: (context, url, error) =>
+                            Image.asset(AppIcons.profileIc, height: 35.h, width: 35.h, fit: BoxFit.cover),
                       )
                     : Image.asset(AppIcons.profileIc, height: 35.h, width: 35.h, fit: BoxFit.cover),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 5.w),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (widget.profileName != null ||
-                        (widget.isVerified == true) ||
-                        (widget.showFollow == true))
-                      Row(
-                        children: [
-                          Text(
-                            widget.profileName!,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontFamily: AppFonts.semibold,
-                              color: AppColors.clr141619,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.profileName != null || (widget.isVerified == true) || (widget.showFollow == true))
+                        Row(
+                          children: [
+                            Text(
+                              widget.profileName!,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontFamily: AppFonts.semibold,
+                                color: AppColors.clr141619,
+                              ),
                             ),
-                          ),
-                          if (widget.isVerified == true) ...[
-                            SizedBox(width: 6.w),
-                            Image.asset(AppIcons.verifyIc, height: 15.h, width: 15.w),
-                          ],
-                          if (widget.showFollow == true) ...[
+                            if (widget.isVerified == true) ...[
+                              SizedBox(width: 6.w),
+                              Image.asset(AppIcons.verifyIc, height: 15.h, width: 15.w),
+                            ],
                             SizedBox(width: 8.w),
                             Text(
-                              '• Follow',
+                              'Follow',
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontFamily: AppFonts.semibold,
                                 color: AppColors.clr2388FF,
                               ),
                             ),
-                          ],
-                          Spacer(),
-                          if (widget.isSponsored == true)
+                            Spacer(),
                             Text(
                               'Sponsored',
                               style: TextStyle(
@@ -161,19 +154,22 @@ class _JobPostWidgetState extends State<JobPostWidget> {
                                 color: AppColors.clr141619,
                               ),
                             ),
-                          SizedBox(width: 6.w),
-                          Image.asset(AppIcons.moreIc, height: 15.h, width: 15.w),
-                        ],
-                      ),
-                    SizedBox(height: 6.h),
-                    buildLayoutContent(),
-                    if (_hasAnyAction()) ...[SizedBox(height: 10.h), buildActionRow()],
-                  ],
+                            SizedBox(width: 6.w),
+                            Image.asset(AppIcons.moreIc, height: 15.h, width: 15.w),
+                            SizedBox(width: 15.w),
+                          ],
+                        ),
+                      SizedBox(height: 6.h),
+                      buildLayoutContent(),
+                      if (_hasAnyAction()) ...[SizedBox(height: 10.h), buildActionRow()],
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
           if (isCommentBoxVisible) ...[SizedBox(height: 10.h), _buildCommentInputBox()],
+          Divider(color: AppColors.clrCED5DC),
         ],
       ),
     );
@@ -207,21 +203,33 @@ class _JobPostWidgetState extends State<JobPostWidget> {
       case AdLayoutType.textOnly:
       case AdLayoutType.yellowText:
       case AdLayoutType.pinkText:
-        return buildText();
+        return TextPostLayout(
+          backgroundColor: getTextBg(widget.layoutType),
+          text: widget.description ?? '',
+          highlightText: widget.email,
+        );
       case AdLayoutType.imageWithText:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildImage(),
             SizedBox(height: 6.h),
-            buildText(),
+            TextPostLayout(
+              backgroundColor: getTextBg(widget.layoutType),
+              text: widget.description ?? '',
+              highlightText: widget.email,
+            ),
           ],
         );
       case AdLayoutType.textWithImage:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildText(),
+            TextPostLayout(
+              backgroundColor: getTextBg(widget.layoutType),
+              text: widget.description ?? '',
+              highlightText: widget.email,
+            ),
             SizedBox(height: 6.h),
             buildImage(),
           ],
@@ -234,7 +242,11 @@ class _JobPostWidgetState extends State<JobPostWidget> {
         return _sideBySideLayout(leftImage: false);
 
       default:
-        return buildText();
+        return TextPostLayout(
+          backgroundColor: getTextBg(widget.layoutType),
+          text: widget.description ?? '',
+          highlightText: widget.email,
+        );
     }
   }
 
@@ -243,12 +255,7 @@ class _JobPostWidgetState extends State<JobPostWidget> {
     final imageHeight = 178.h;
     final spacing = 6.w;
 
-    final textStyle = TextStyle(
-      fontSize: 14.sp,
-      fontFamily: AppFonts.regular,
-      height: 1.4,
-      color: AppColors.clr141619,
-    );
+    final textStyle = TextStyle(fontSize: 14.sp, fontFamily: AppFonts.regular, height: 1.4, color: AppColors.clr141619);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -314,101 +321,8 @@ class _JobPostWidgetState extends State<JobPostWidget> {
     if (widget.postImage == null) return const SizedBox();
     return ClipRRect(
       borderRadius: BorderRadius.circular(10.r),
-      child: Image.asset(
-        widget.postImage!,
-        height: 200.h,
-        width: double.infinity,
-        fit: BoxFit.cover,
-      ),
+      child: Image.asset(widget.postImage!, height: 200.h, width: double.infinity, fit: BoxFit.cover),
     );
-  }
-
-  Widget buildText() {
-    List<Widget> textWidgets = [];
-
-    if (widget.jobTitle != null) {
-      textWidgets.add(
-        Text(
-          widget.jobTitle!,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontFamily: AppFonts.semibold,
-            color: AppColors.clr586777,
-          ),
-        ),
-      );
-    }
-    if (widget.location != null) {
-      textWidgets.add(
-        Text(
-          'Location: ${widget.location}',
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontFamily: AppFonts.regular,
-            color: AppColors.clr687684,
-          ),
-        ),
-      );
-    }
-    if (widget.ctc != null) {
-      textWidgets.add(
-        Text(
-          'CTC: ${widget.ctc}',
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontFamily: AppFonts.regular,
-            color: AppColors.clr687684,
-          ),
-        ),
-      );
-    }
-    if (widget.experience != null) {
-      textWidgets.add(
-        Text(
-          'Experience: ${widget.experience}',
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontFamily: AppFonts.regular,
-            color: AppColors.clr687684,
-          ),
-        ),
-      );
-    }
-    if (widget.description != null) {
-      textWidgets.add(
-        Text(
-          widget.description!,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontFamily: AppFonts.regular,
-            color: AppColors.clr687684,
-          ),
-        ),
-      );
-    }
-    if (widget.email != null) {
-      textWidgets.add(
-        RichText(
-          text: TextSpan(
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontFamily: AppFonts.regular,
-              color: AppColors.clr586777,
-            ),
-            children: [
-              const TextSpan(text: 'Send your CV to '),
-              TextSpan(
-                text: widget.email!,
-                style: TextStyle(color: AppColors.clr2388FF),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (textWidgets.isEmpty) return const SizedBox();
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: textWidgets);
   }
 
   Widget buildActionRow() {
@@ -443,11 +357,7 @@ class _JobPostWidgetState extends State<JobPostWidget> {
 
                 GestureDetector(
                   onTap: widget.onBookmarkTap,
-                  child: ActionIcon(
-                    icon: widget.isBookmarked == true
-                        ? AppIcons.saveBookmarkIc
-                        : AppIcons.bookmarkIc,
-                  ),
+                  child: ActionIcon(icon: widget.isBookmarked == true ? AppIcons.saveBookmarkIc : AppIcons.bookmarkIc),
                 ),
 
                 GestureDetector(
@@ -462,16 +372,12 @@ class _JobPostWidgetState extends State<JobPostWidget> {
 
                 GestureDetector(
                   onTap: onTranslateTap,
-                  child: ActionIcon(
-                    icon: isTranslated
-                        ? AppIcons.translateSelectedIc
-                        : AppIcons.translateSelectedIc,
-                  ),
+                  child: ActionIcon(icon: isTranslated ? AppIcons.translateSelectedIc : AppIcons.translateSelectedIc),
                 ),
               ]
               .map(
                 (e) => Padding(
-                  padding: EdgeInsets.only(right: 23.w),
+                  padding: EdgeInsets.only(right: 24.w),
                   child: e,
                 ),
               )
@@ -502,10 +408,7 @@ class _JobPostWidgetState extends State<JobPostWidget> {
             Expanded(
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: AppColors.clrF7F7F7,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
+                decoration: BoxDecoration(color: AppColors.clrF7F7F7, borderRadius: BorderRadius.circular(8.r)),
                 child: TextField(
                   controller: controller,
                   maxLines: null,
@@ -519,9 +422,7 @@ class _JobPostWidgetState extends State<JobPostWidget> {
             SizedBox(width: 6.w),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Image.asset(AppIcons.sendChatIc, height: 24.h, width: 24.w, fit: BoxFit.contain),
-              ],
+              children: [Image.asset(AppIcons.sendChatIc, height: 24.h, width: 24.w, fit: BoxFit.contain)],
             ),
           ],
         ),

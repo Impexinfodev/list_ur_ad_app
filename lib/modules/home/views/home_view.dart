@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
+import 'package:list_ur_add/modules/ad/model/ad_layout_type.dart';
 import 'package:list_ur_add/modules/home/provider/home_provider.dart';
 import 'package:list_ur_add/widgets/ad_widget/job_post_widget.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +17,7 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<HomeProvider>(context, listen: false).fetchAds();
-      Provider.of<HomeProvider>(context, listen: false).fetchLikes();
+      Provider.of<HomeProvider>(context, listen: false).fetchAds(context);
     });
   }
 
@@ -30,7 +30,7 @@ class _HomeViewState extends State<HomeView> {
             backgroundColor: Colors.white,
             body: RefreshIndicator(
               onRefresh: () {
-                return provider.fetchAds();
+                return provider.fetchAds(context);
               },
               child: SingleChildScrollView(
                 child: Column(
@@ -42,12 +42,12 @@ class _HomeViewState extends State<HomeView> {
                       itemBuilder: (BuildContext context, int index) {
                         final ad = provider.adsList[index];
                         return JobPostWidget(
-                          profileName: ad.ownerName,
-                          profileImage: ad.ownerAvatar ?? "",
+                          profileName: ad.ownerName ?? 'Unknown',
+                          profileImage: ad.ownerAvatar ?? 'assets/default_profile.png',
                           isVerified: true,
-                          jobTitle: ad.title.toString(),
-                          location: ad.city,
-                          ctc: "₹${ad.price}",
+                          jobTitle: ad.title?.toString() ?? 'No Title',
+                          location: ad.city ?? 'Unknown',
+                          ctc: ad.price != null ? '₹${ad.price}' : 'Negotiable',
                           experience: '3+ years',
                           description: parseHtml(ad.description ?? ""),
                           email: 'hr@company.com',

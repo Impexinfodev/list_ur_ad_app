@@ -45,11 +45,7 @@ class ApiService {
     return await http.post(
       Uri.parse(ApiUrl.login),
       headers: {"Content-Type": "application/json", "Accept": "application/json"},
-      body: jsonEncode({
-        "phone": phone,
-        "country_code": countryCode,
-        "verification_token": verificationToken,
-      }),
+      body: jsonEncode({"phone": phone, "country_code": countryCode, "verification_token": verificationToken}),
     );
   }
 
@@ -89,20 +85,12 @@ class ApiService {
     return await http.post(
       Uri.parse(ApiUrl.verifyOtp),
       headers: {"Content-Type": "application/json", "Accept": "application/json"},
-      body: jsonEncode({
-        "phone": phone,
-        "country_code": countryCode,
-        "otp": otp,
-        "purpose": purpose,
-      }),
+      body: jsonEncode({"phone": phone, "country_code": countryCode, "otp": otp, "purpose": purpose}),
     );
   }
 
   ///loginApi
-  static Future<http.Response> checkPhone({
-    required String phone,
-    required String countryCode,
-  }) async {
+  static Future<http.Response> checkPhone({required String phone, required String countryCode}) async {
     return await http.post(
       Uri.parse(ApiUrl.checkPhone),
       headers: {"Content-Type": "application/json", "Accept": "application/json0"},
@@ -143,16 +131,12 @@ class ApiService {
   }
 
   /// ads
-  static Future<http.Response> getAds() async {
+  static Future<http.Response> getAds(String? categoryId) async {
     try {
       String token = await getAccessToken();
       return await http.get(
         Uri.parse(ApiUrl.ads),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Authorization": "Bearer $token",
-        },
+        headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
       );
     } catch (e) {
       Log.console("Error(Function getTemplates): $e");
@@ -166,11 +150,7 @@ class ApiService {
       String token = await getAccessToken();
       return await http.get(
         Uri.parse(ApiUrl.likes),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Authorization": "Bearer $token",
-        },
+        headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
       );
     } catch (e) {
       Log.console("Error(Function getTemplates): $e");
@@ -183,11 +163,7 @@ class ApiService {
     String token = await getAccessToken();
     return await http.post(
       Uri.parse(ApiUrl.likeAd(adId)),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
@@ -196,11 +172,7 @@ class ApiService {
     String token = await getAccessToken();
     return await http.delete(
       Uri.parse(ApiUrl.likeAd(adId)),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
@@ -209,11 +181,7 @@ class ApiService {
     String token = await getAccessToken();
     return await http.post(
       Uri.parse(ApiUrl.bookmarkAd(adId)),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
@@ -222,11 +190,7 @@ class ApiService {
     String token = await getAccessToken();
     return await http.post(
       Uri.parse(ApiUrl.bookmarkAd(adId)),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
@@ -235,11 +199,7 @@ class ApiService {
     String token = await getAccessToken();
     return await http.get(
       Uri.parse(ApiUrl.share(adId)),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
@@ -248,11 +208,7 @@ class ApiService {
     String token = await getAccessToken();
     return await http.get(
       Uri.parse(ApiUrl.notification),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
@@ -261,11 +217,7 @@ class ApiService {
     String token = await getAccessToken();
     return await http.patch(
       Uri.parse(ApiUrl.readAllNotification),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
@@ -274,11 +226,7 @@ class ApiService {
     String token = await getAccessToken();
     return await http.get(
       Uri.parse(ApiUrl.unreadCountNotification),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
@@ -287,11 +235,7 @@ class ApiService {
     String token = await getAccessToken();
     return await http.delete(
       Uri.parse(ApiUrl.deleteNotification(notificationId)),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
@@ -300,24 +244,59 @@ class ApiService {
     String token = await getAccessToken();
     return await http.get(
       Uri.parse(ApiUrl.alerts),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 
-  ///alerts
+  ///getProfile
   static Future<http.Response> getProfile() async {
     String token = await getAccessToken();
     return await http.get(
       Uri.parse(ApiUrl.profile),
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": "Bearer $token",
-      },
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
+    );
+  }
+
+  ///updateProfile
+  static Future<http.Response> updateProfile(Map<String, dynamic> body) async {
+    String token = await getAccessToken();
+    return await http.put(
+      Uri.parse(ApiUrl.profile),
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
+      body: jsonEncode(body),
+    );
+  }
+
+  ///uploadProfileImage
+  static Future<void> uploadProfileImage(File file) async {
+    String token = await getAccessToken();
+    var request = http.MultipartRequest("POST", Uri.parse(ApiUrl.uploadProfile));
+    request.headers['Authorization'] = "Bearer $token";
+    request.files.add(
+      await http.MultipartFile.fromPath("file", file.path, contentType: http.MediaType("image", "jpeg")),
+    );
+    var response = await request.send();
+    var responseData = await response.stream.bytesToString();
+    Log.console("Upload Profile Image Response : $responseData");
+  }
+
+  ///uploadCoverImage
+  static Future<void> uploadCoverImage(File file) async {
+    String token = await getAccessToken();
+    var request = http.MultipartRequest("POST", Uri.parse(ApiUrl.uploadCover));
+    request.headers['Authorization'] = "Bearer $token";
+    request.files.add(
+      await http.MultipartFile.fromPath("file", file.path, contentType: http.MediaType("image", "jpeg")),
+    );
+    await request.send();
+  }
+
+  ///suggestions
+  static Future<http.Response> suggestions() async {
+    String token = await getAccessToken();
+    return await http.get(
+      Uri.parse(ApiUrl.suggestions),
+      headers: {"Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer $token"},
     );
   }
 }

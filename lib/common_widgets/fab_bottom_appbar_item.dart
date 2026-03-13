@@ -43,7 +43,7 @@ class FABBottomAppBar extends StatelessWidget {
           surfaceTintColor: backgroundColor,
           color: Colors.white,
           shadowColor: Colors.white,
-          padding: const EdgeInsets.all(0),
+          padding: EdgeInsets.symmetric(horizontal: 2.w),
           shape: notchedShape,
           child: Row(
             mainAxisSize: MainAxisSize.max,
@@ -52,17 +52,17 @@ class FABBottomAppBar extends StatelessWidget {
                 return Expanded(
                   child: Center(
                     child: SizedBox(
-                      height: 43,
-                      width: 43,
+                      height: 40,
+                      width: 40,
                       child: Transform.translate(
-                        offset: const Offset(0, -8),
+                        offset: const Offset(0, -6),
                         child: FloatingActionButton(
                           elevation: 0,
                           backgroundColor: AppColors.clr2388FF,
                           onPressed: () {
                             AdTermsSheet.show(context);
                           },
-                          child: const Icon(Icons.add, color: Colors.white, size: 42),
+                          child: const Icon(Icons.add, color: Colors.white, size: 40),
                         ),
                       ),
                     ),

@@ -14,8 +14,8 @@ class ActionIcon extends StatelessWidget {
     super.key,
     required this.icon,
     this.text,
-    this.iconSize = 14,
-    this.spacing = 3.6,
+    this.iconSize = 15,
+    this.spacing = 3.0,
     this.iconColor,
   });
 

@@ -8,4 +8,5 @@ class AppImages {
   static const profileBannerImg= 'assets/images/profileBannerImg.png';
   static const profileImg= 'assets/images/profileImg.png';
   static const imageCover= 'assets/images/imageCover.png';
+  static const tabBarBackImg= 'assets/images/tabBarBackImg.png';
 }

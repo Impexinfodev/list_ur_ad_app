@@ -6,6 +6,7 @@ import 'package:list_ur_add/constant/app_colors.dart';
 import 'package:list_ur_add/constant/app_fonts.dart';
 import 'package:list_ur_add/constant/app_icons.dart';
 import 'package:list_ur_add/constant/app_images.dart';
+import 'package:list_ur_add/modules/home/provider/home_provider.dart';
 import 'package:list_ur_add/modules/profile/provider/profile_provider.dart';
 import 'package:list_ur_add/modules/profile/views/bookmark_view.dart';
 import 'package:list_ur_add/modules/profile/views/draft_ads_view.dart';
@@ -37,18 +38,14 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
     super.initState();
     Future.microtask(() {
       context.read<ProfileProvider>().fetchProfile();
+      context.read<HomeProvider>().fetchLikes();
     });
+    Provider.of<ProfileProvider>(context, listen: false).getSuggestions();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 420));
     indicatorAnim = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween(begin: 0.0, end: 1.08).chain(CurveTween(curve: Curves.easeOut)),
-        weight: 60,
-      ),
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.08).chain(CurveTween(curve: Curves.easeOut)), weight: 60),
 
-      TweenSequenceItem(
-        tween: Tween(begin: 1.08, end: 1.0).chain(CurveTween(curve: Curves.easeIn)),
-        weight: 40,
-      ),
+      TweenSequenceItem(tween: Tween(begin: 1.08, end: 1.0).chain(CurveTween(curve: Curves.easeIn)), weight: 40),
     ]).animate(_controller);
     _controller.value = 1.0;
   }
@@ -84,7 +81,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                       children: [
                         SafeArea(
                           child: SizedBox(
-                            height: 200.h,
+                            height: 165.h,
                             child: Stack(
                               clipBehavior: Clip.none,
                               children: [
@@ -92,13 +89,11 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                                     ? CachedNetworkImage(
                                         imageUrl: cover!,
                                         fit: BoxFit.cover,
+                                        height: 120.h,
                                         width: double.infinity,
-                                        placeholder: (context, url) =>
-                                            Container(color: Colors.grey.shade200),
-                                        errorWidget: (context, url, error) => Image.asset(
-                                          AppImages.profileBannerImg,
-                                          fit: BoxFit.cover,
-                                        ),
+                                        placeholder: (context, url) => Container(color: Colors.grey.shade200),
+                                        errorWidget: (context, url, error) =>
+                                            Image.asset(AppImages.profileBannerImg, fit: BoxFit.cover),
                                       )
                                     : Image.asset(
                                         AppImages.profileBannerImg,
@@ -106,58 +101,59 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                                         width: double.infinity,
                                       ),
                                 Positioned(
-                                  left: 15.w,
-                                  right: 20.w,
-                                  bottom: 20.h,
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 38.r,
-                                        backgroundColor: Colors.white,
-                                        child: ClipOval(
-                                          child: (avatar ?? "").isNotEmpty
-                                              ? CachedNetworkImage(
-                                                  imageUrl: avatar!,
-                                                  width: 76.w,
-                                                  height: 76.h,
-                                                  fit: BoxFit.cover,
-                                                  placeholder: (context, url) =>
-                                                      const CircularProgressIndicator(
-                                                        strokeWidth: 2,
-                                                      ),
-                                                  errorWidget: (context, url, error) => Image.asset(
-                                                    AppImages.profileImg,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                )
-                                              : Image.asset(
-                                                  AppImages.profileImg,
-                                                  width: 76.w,
-                                                  height: 76.h,
-                                                  fit: BoxFit.cover,
-                                                ),
+                                  left: 14.w,
+                                  right: 14.w,
+                                  child: Transform.translate(
+                                    offset: Offset(0, 95.h),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(width: 3.5.w, color: Colors.white),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: CircleAvatar(
+                                            radius: 30.r,
+                                            backgroundColor: Colors.white,
+                                            child: ClipOval(
+                                              child: (avatar ?? "").isNotEmpty
+                                                  ? CachedNetworkImage(
+                                                      imageUrl: avatar!,
+                                                      width: 60.w,
+                                                      height: 60.h,
+                                                      fit: BoxFit.cover,
+                                                      placeholder: (context, url) =>
+                                                          const CircularProgressIndicator(strokeWidth: 2),
+                                                      errorWidget: (context, url, error) =>
+                                                          Image.asset(AppImages.profileImg, fit: BoxFit.cover),
+                                                    )
+                                                  : Image.asset(
+                                                      AppImages.profileImg,
+                                                      width: 76.w,
+                                                      height: 76.h,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                      CustomButton(
-                                        buttonName: 'Edit Profile',
-                                        fontSize: 12.sp,
-                                        onPressed: () {
-                                          EditProfileSheet.show(context);
-                                        },
-                                        height: 30.h,
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 3.h,
-                                          horizontal: 6.w,
+                                        CustomButton(
+                                          buttonName: 'Edit Profile',
+                                          fontSize: 12.sp,
+                                          onPressed: () {
+                                            EditProfileSheet.show(context);
+                                          },
+                                          height: 30.h,
+                                          padding: EdgeInsets.symmetric(vertical: 3.h, horizontal: 6.w),
+                                          borderColor: AppColors.clr2388FF,
+                                          backgroundColor: Colors.white,
+                                          textColor: AppColors.clr2388FF,
+                                          borderWidth: 1.w,
+                                          borderRadius: 10.r,
                                         ),
-                                        borderColor: AppColors.clr2388FF,
-                                        backgroundColor: Colors.white,
-                                        textColor: AppColors.clr2388FF,
-                                        borderWidth: 1.w,
-                                        borderRadius: 12.r,
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 Positioned(
@@ -169,10 +165,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                                         onTap: () => Navigator.pop(context),
                                         child: Container(
                                           padding: EdgeInsets.all(4.r),
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                          ),
+                                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
                                           child: Icon(
                                             Icons.arrow_back_ios_new,
                                             color: AppColors.clr2388FF,
@@ -197,84 +190,76 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 20.w),
+                          padding: EdgeInsets.only(left: 15.w),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 provider.profileModel?.data?.fullName ?? '',
                                 style: TextStyle(
-                                  fontSize: 20.sp,
+                                  fontSize: 18.sp,
                                   color: AppColors.clr141619,
                                   fontFamily: AppFonts.bold,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.2,
                                 ),
                               ),
+                              SizedBox(height: 1.h),
                               Text(
-                                "@${provider.profileModel?.data?.username ?? ''}",
+                                "@${provider.profileModel?.data?.username?.toLowerCase() ?? ''}",
                                 style: TextStyle(
-                                  fontSize: 16.sp,
+                                  fontSize: 14.sp,
                                   color: AppColors.clr687684,
                                   fontFamily: AppFonts.regular,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              SizedBox(height: 15.h),
+                              SizedBox(height: 10.h),
                               Text(
-                                provider.profileModel?.data?.profession ?? 'Untitled',
+                                "Professional ${provider.profileModel?.data?.profession ?? 'Untitled'}",
                                 style: TextStyle(
-                                  fontSize: 16.sp,
+                                  fontSize: 14.sp,
                                   color: AppColors.clr141619,
                                   fontFamily: AppFonts.regular,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              SizedBox(height: 8.h),
+                              SizedBox(height: 4.h),
                               Row(
                                 children: [
-                                  Image.asset(
-                                    AppIcons.linkIc,
-                                    height: 14.h,
-                                    width: 14.w,
-                                    fit: BoxFit.contain,
-                                  ),
+                                  Image.asset(AppIcons.linkIc, height: 13.h, width: 13.w, fit: BoxFit.contain),
                                   SizedBox(width: 4.w),
                                   Text(
                                     provider.profileModel?.data?.website ?? 'Untitled',
                                     style: TextStyle(
-                                      fontSize: 14.sp,
+                                      fontSize: 13.sp,
                                       color: AppColors.clr2388FF,
                                       fontFamily: AppFonts.regular,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   SizedBox(width: 16.w),
-                                  Image.asset(
-                                    AppIcons.calenderIc,
-                                    height: 14.h,
-                                    width: 14.w,
-                                    fit: BoxFit.contain,
-                                  ),
+                                  Image.asset(AppIcons.calenderIc, height: 13.h, width: 13.w, fit: BoxFit.contain),
                                   SizedBox(width: 4.w),
                                   Text(
                                     'Joined September 2025',
                                     style: TextStyle(
-                                      fontSize: 14.sp,
+                                      fontSize: 13.sp,
                                       color: AppColors.clr687684,
                                       fontFamily: AppFonts.regular,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 13.h),
+                              SizedBox(height: 8.h),
                               Row(
                                 children: [
                                   RichText(
                                     text: TextSpan(
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        fontFamily: AppFonts.regular,
-                                      ),
+                                      style: TextStyle(fontSize: 12.sp, fontFamily: AppFonts.regular),
                                       children: [
                                         TextSpan(
-                                          text:
-                                              "${provider.profileModel?.data?.followingCount ?? '217'} ",
+                                          text: "${provider.profileModel?.data?.followingCount ?? '217'} ",
                                           style: TextStyle(color: AppColors.clr141619),
                                         ),
                                         TextSpan(
@@ -287,14 +272,10 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                                   SizedBox(width: 11.w),
                                   RichText(
                                     text: TextSpan(
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        fontFamily: AppFonts.regular,
-                                      ),
+                                      style: TextStyle(fontSize: 14.sp, fontFamily: AppFonts.regular),
                                       children: [
                                         TextSpan(
-                                          text:
-                                              "${provider.profileModel?.data?.followersCount ?? '217'} ",
+                                          text: "${provider.profileModel?.data?.followersCount ?? '217'} ",
                                           style: TextStyle(color: AppColors.clr141619),
                                         ),
                                         TextSpan(
@@ -306,113 +287,143 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20.h),
-                              Text(
-                                'Discover People',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: AppColors.clr2388FF,
-                                  fontFamily: AppFonts.semibold,
-                                ),
-                              ),
-                              SizedBox(height: 5.h),
-                              SizedBox(
-                                height: 200.h,
-                                child: ListView.builder(
-                                  itemCount: 4,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (BuildContext context, int index) {
-                                    return Stack(
+                              SizedBox(height: 14.h),
+                              provider.suggestionsList.isEmpty
+                                  ? const SizedBox()
+                                  : Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Container(
-                                          width: 150.w,
-                                          height: 191.h,
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 15.w,
-                                            vertical: 12.h,
-                                          ),
-                                          margin: EdgeInsets.only(
-                                            right: 7.w,
-                                            top: 5.h,
-                                            bottom: 5.h,
-                                            left: 5.w,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(10.r),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: AppColors.clr2388FF.withOpacity(0.20),
-                                                blurRadius: 6,
-                                                spreadRadius: 1,
-                                                offset: const Offset(0, 1),
-                                              ),
-                                            ],
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                    color: AppColors.clrEDEDED,
-                                                    width: 0.5.w,
-                                                  ),
-                                                ),
-                                                child: CircleAvatar(
-                                                  radius: 38.r,
-                                                  backgroundImage: AssetImage(AppImages.profileImg),
-                                                ),
-                                              ),
-                                              SizedBox(height: 4.h),
-                                              Text(
-                                                'Raghav',
-                                                style: TextStyle(
-                                                  fontSize: 16.sp,
-                                                  color: AppColors.clr141619,
-                                                  fontFamily: AppFonts.semibold,
-                                                ),
-                                              ),
-                                              Text(
-                                                'Property Dealer',
-                                                style: TextStyle(
-                                                  fontSize: 12.sp,
-                                                  letterSpacing: -0.1,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: AppColors.clr687684,
-                                                  fontFamily: AppFonts.regular,
-                                                ),
-                                              ),
-                                              SizedBox(height: 13.h),
-                                              CustomButton(
-                                                buttonName: 'Follow',
-                                                fontSize: 14.sp,
-                                                onPressed: () {},
-                                                height: 30.h,
-                                                borderRadius: 8.r,
-                                                padding: EdgeInsets.symmetric(vertical: 1.h),
-                                              ),
-                                            ],
+                                        Text(
+                                          'Discover People',
+                                          style: TextStyle(
+                                            fontSize: 15.sp,
+                                            color: AppColors.clr2388FF,
+                                            fontFamily: AppFonts.semibold,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: -0.5,
                                           ),
                                         ),
-                                        Positioned(
-                                          top: 20.h,
-                                          right: 20.w,
-                                          child: InkWell(
-                                            onTap: () {},
-                                            child: Image.asset(
-                                              AppIcons.crossIc,
-                                              height: 16.h,
-                                              width: 16.w,
-                                              fit: BoxFit.cover,
-                                              color: AppColors.clr687684,
-                                            ),
+                                        SizedBox(height: 5.h),
+                                        SizedBox(
+                                          height: 170.h,
+                                          child: ListView.builder(
+                                            itemCount: provider.suggestionsList.length,
+                                            scrollDirection: Axis.horizontal,
+                                            itemBuilder: (BuildContext context, int index) {
+                                              final suggestions = provider.suggestionsList[index];
+
+                                              return Stack(
+                                                children: [
+                                                  Container(
+                                                    width: 125.w,
+                                                    height: 160.h,
+                                                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                                                    margin: EdgeInsets.only(
+                                                      right: 7.w,
+                                                      top: 5.h,
+                                                      bottom: 5.h,
+                                                      left: 2.w,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius: BorderRadius.circular(10.r),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: AppColors.clr2388FF.withOpacity(0.20),
+                                                          blurRadius: 6,
+                                                          spreadRadius: 1,
+                                                          offset: const Offset(0, 1),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        CircleAvatar(
+                                                          radius: 30.r,
+                                                          backgroundColor: Colors.white,
+                                                          child: ClipOval(
+                                                            child: (avatar ?? "").isNotEmpty
+                                                                ? CachedNetworkImage(
+                                                                    imageUrl: suggestions.avatarUrl ?? '',
+                                                                    width: 60.w,
+                                                                    height: 60.h,
+                                                                    fit: BoxFit.cover,
+                                                                    placeholder: (context, url) =>
+                                                                        const CircularProgressIndicator(strokeWidth: 2),
+                                                                    errorWidget: (context, url, error) => Image.asset(
+                                                                      AppImages.profileImg,
+                                                                      fit: BoxFit.cover,
+                                                                    ),
+                                                                  )
+                                                                : Image.asset(
+                                                                    AppImages.profileImg,
+                                                                    width: 76.w,
+                                                                    height: 76.h,
+                                                                    fit: BoxFit.cover,
+                                                                  ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 6.h),
+                                                        Text(
+                                                          (suggestions.fullName != null &&
+                                                                  suggestions.fullName!.isNotEmpty)
+                                                              ? suggestions.fullName!.split(' ').first
+                                                              : '',
+                                                          style: TextStyle(
+                                                            fontSize: 14.sp,
+                                                            color: AppColors.clr141619,
+                                                            letterSpacing: -0.1,
+                                                            fontFamily: AppFonts.semibold,
+                                                            fontWeight: FontWeight.w500,
+                                                            height: 1.1,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          suggestions.username ?? '',
+                                                          style: TextStyle(
+                                                            fontSize: 12.sp,
+                                                            letterSpacing: -0.1,
+                                                            fontWeight: FontWeight.w500,
+                                                            color: AppColors.clr687684,
+                                                            fontFamily: AppFonts.regular,
+                                                            height: 1.1,
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 15.h),
+                                                        CustomButton(
+                                                          buttonName: 'Follow',
+                                                          fontSize: 13.sp,
+                                                          onPressed: () {},
+                                                          height: 28.h,
+                                                          borderRadius: 8.r,
+                                                          padding: EdgeInsets.symmetric(vertical: 1.h),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Positioned(
+                                                    top: 12.h,
+                                                    right: 14.w,
+                                                    child: InkWell(
+                                                      onTap: () {
+                                                        provider.removeSuggestion(index);
+                                                      },
+                                                      child: Image.asset(
+                                                        AppIcons.crossIc,
+                                                        height: 15.h,
+                                                        width: 15.w,
+                                                        fit: BoxFit.fill,
+                                                        color: AppColors.clr687684,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
                                           ),
                                         ),
                                       ],
-                                    );
-                                  },
-                                ),
-                              ),
+                                    ),
                             ],
                           ),
                         ),
@@ -430,78 +441,50 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                     bottom: PreferredSize(
                       preferredSize: Size.fromHeight(45.h),
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 15.w),
                         height: 45.h,
+                        decoration: BoxDecoration(
+                          border: Border(bottom: BorderSide(color: AppColors.clr90989B.withOpacity(0.4), width: 0.5)),
+                        ),
                         child: AnimatedBuilder(
                           animation: _controller,
                           builder: (context, _) {
                             final tabWidth = MediaQuery.of(context).size.width / 4;
+
                             return Stack(
                               children: [
                                 Transform.translate(
                                   offset: Offset(
-                                    tabWidth *
-                                        (previousIndex +
-                                            (selectedIndex - previousIndex) * indicatorAnim.value),
+                                    tabWidth * (previousIndex + (selectedIndex - previousIndex) * indicatorAnim.value),
                                     0,
                                   ),
-                                  child: Transform.scale(
-                                    scaleX: indicatorAnim.value,
-                                    child: SizedBox(
-                                      width: tabWidth - 20.w,
-                                      height: 40.h,
-                                      child: DecoratedBox(
-                                        decoration: SlantedIndicator(
-                                          color: Colors.blue,
-                                          slant: 15,
-                                          height: 40,
-                                        ),
-                                      ),
-                                    ),
+                                  child: SizedBox(
+                                    width: tabWidth,
+                                    height: 45.h,
+                                    child: Image.asset(AppImages.tabBarBackImg, fit: BoxFit.fill),
                                   ),
                                 ),
+
                                 Row(
                                   children: List.generate(4, (index) {
                                     final isSelected = index == selectedIndex;
-                                    final isPrevious = index == previousIndex;
-
-                                    double bubble = isPrevious ? 1 - (_controller.value * 0.15) : 1;
 
                                     return Expanded(
                                       child: GestureDetector(
                                         onTap: () => _onTabTap(index),
-                                        child: Center(
-                                          child: Transform.scale(
-                                            scale: bubble,
-                                            child: AnimatedDefaultTextStyle(
-                                              duration: const Duration(milliseconds: 200),
+                                        child: Transform.translate(
+                                          offset: Offset(0, -3.h),
+                                          child: Container(
+                                            height: 45.h,
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              ["My Ads", "Bookmark", "Draft Ads", "Likes"][index],
+                                              textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                fontSize: isSelected ? 16.sp : 14.sp,
-                                                color: isSelected
-                                                    ? Colors.white
-                                                    : AppColors.clr687684,
                                                 fontFamily: AppFonts.medium,
-                                              ),
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 1,
-                                                  vertical: 4,
-                                                ),
-                                                child: Text(
-                                                  [
-                                                    "My Ads",
-                                                    "Bookmark",
-                                                    "Draft Ads",
-                                                    "Likes",
-                                                  ][index],
-                                                  style: TextStyle(
-                                                    fontFamily: AppFonts.medium,
-                                                    color: isSelected
-                                                        ? Colors.white
-                                                        : AppColors.clr687684,
-                                                    fontSize: isSelected ? 15.sp : 14.sp,
-                                                  ),
-                                                ),
+                                                color: isSelected ? Colors.white : AppColors.clr687684,
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w600,
+                                                height: 1.0,
                                               ),
                                             ),
                                           ),

@@ -6,11 +6,13 @@ import 'package:list_ur_add/constant/app_colors.dart';
 import 'package:list_ur_add/constant/app_fonts.dart';
 import 'package:list_ur_add/constant/app_icons.dart';
 import 'package:list_ur_add/constant/app_images.dart';
+import 'package:list_ur_add/modules/profile/provider/profile_provider.dart';
 import 'package:list_ur_add/util/image_picker_utils.dart';
 import 'package:list_ur_add/util/media_source_picker.dart';
+import 'package:provider/provider.dart';
 
 class EditProfileSheet extends StatefulWidget {
-  const EditProfileSheet({Key? key}) : super(key: key);
+  const EditProfileSheet({super.key});
 
   static void show(BuildContext context) {
     showModalBottomSheet(
@@ -28,6 +30,26 @@ class EditProfileSheet extends StatefulWidget {
 class _EditProfileSheetState extends State<EditProfileSheet> {
   File? profileImage;
   File? coverImage;
+
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final bioController = TextEditingController();
+  final genderController = TextEditingController();
+  final professionController = TextEditingController();
+  final dobController = TextEditingController();
+  final websiteController = TextEditingController();
+  final addressController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final profile = context.read<ProfileProvider>().profileModel;
+    nameController.text = profile?.data?.fullName ?? "";
+    bioController.text = profile?.data?.bio ?? "";
+    genderController.text = profile?.data?.gender ?? "";
+    professionController.text = profile?.data?.profession ?? "";
+    websiteController.text = profile?.data?.website ?? "";
+  }
 
   Future<void> _pickImage({required bool isCover}) async {
     final value = await showModalBottomSheet(
@@ -55,9 +77,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     return Divider(height: 1, thickness: 0.4, color: AppColors.clr90989B.withOpacity(0.60));
   }
 
-  Widget _item(String title, String value, {bool isMulti = false}) {
-    final controller = TextEditingController(text: value);
-
+  Widget _item(String title, TextEditingController controller, {bool isMulti = false}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
       child: Row(
@@ -67,30 +87,14 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
             width: 110.w,
             child: Text(
               title,
-              style: TextStyle(
-                color: AppColors.clr141619,
-                fontFamily: AppFonts.bold,
-                fontSize: 16.sp,
-              ),
+              style: TextStyle(color: AppColors.clr141619, fontFamily: AppFonts.bold, fontSize: 16.sp),
             ),
           ),
           Expanded(
             child: TextField(
               controller: controller,
               maxLines: isMulti ? null : 1,
-              style: TextStyle(
-                color: AppColors.clr2388FF,
-                fontFamily: AppFonts.regular,
-                fontSize: 16.sp,
-              ),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-              cursorColor: AppColors.clr2388FF,
+              decoration: const InputDecoration(border: InputBorder.none),
             ),
           ),
         ],
@@ -100,15 +104,15 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = context.watch<ProfileProvider>();
+    final profileData = profileProvider.profileModel?.data;
+
     return FractionallySizedBox(
       heightFactor: 0.75,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12.r),
-            topRight: Radius.circular(12.r),
-          ),
+          borderRadius: BorderRadius.only(topLeft: Radius.circular(12.r), topRight: Radius.circular(12.r)),
         ),
         child: Column(
           children: [
@@ -121,39 +125,44 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                     onTap: () => Navigator.pop(context),
                     child: Text(
                       "Cancel",
-                      style: TextStyle(
-                        color: AppColors.clr434445,
-                        fontSize: 14.sp,
-                        fontFamily: AppFonts.medium,
-                      ),
+                      style: TextStyle(color: AppColors.clr434445, fontSize: 14.sp, fontFamily: AppFonts.medium),
                     ),
                   ),
                   Text(
                     "Edit Profile",
-                    style: TextStyle(
-                      color: AppColors.clr141619,
-                      fontSize: 16.sp,
-                      fontFamily: AppFonts.bold,
-                    ),
+                    style: TextStyle(color: AppColors.clr141619, fontSize: 16.sp, fontFamily: AppFonts.bold),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      // Save Logic Here
-                      Navigator.pop(context);
+                    onTap: () async {
+                      final provider = Provider.of<ProfileProvider>(context, listen: false);
+                      final body = {
+                        "full_name": nameController.text,
+                        "bio": bioController.text,
+                        "gender": genderController.text,
+                        "profession": professionController.text,
+                        "website": websiteController.text,
+                      };
+                      bool success = await provider.updateProfile(body);
+                      if (success) {
+                        if (profileImage != null) {
+                          await provider.uploadProfileImage(profileImage!);
+                          profileImage = null; // clear local file
+                        }
+                        if (coverImage != null) {
+                          await provider.uploadCoverImage(coverImage!);
+                          coverImage = null; // clear local file
+                        }
+                        Navigator.pop(context);
+                      }
                     },
                     child: Text(
                       "Save",
-                      style: TextStyle(
-                        color: AppColors.clr282828,
-                        fontSize: 14.sp,
-                        fontFamily: AppFonts.semibold,
-                      ),
+                      style: TextStyle(color: AppColors.clr282828, fontSize: 14.sp, fontFamily: AppFonts.semibold),
                     ),
                   ),
                 ],
               ),
             ),
-
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -161,6 +170,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
+                        // Cover Image
                         GestureDetector(
                           onTap: () => _pickImage(isCover: true),
                           child: Container(
@@ -170,7 +180,10 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                               image: DecorationImage(
                                 image: coverImage != null
                                     ? FileImage(coverImage!)
-                                    : AssetImage(AppImages.imageCover) as ImageProvider,
+                                    : (profileData?.coverUrl != null
+                                              ? NetworkImage(profileData!.coverUrl!)
+                                              : AssetImage(AppImages.imageCover))
+                                          as ImageProvider,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -179,46 +192,107 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                             ),
                           ),
                         ),
+                        // Profile Image
                         Positioned(
                           top: 110.h,
                           left: 16.w,
                           child: GestureDetector(
                             onTap: () => _pickImage(isCover: false),
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 15.h),
+                              height: 76.h,
+                              width: 76.w,
                               decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white, width: 4.w),
-                                color: AppColors.clr1289FF,
                                 shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white, width: 4.w),
+                                image: DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: profileImage != null
+                                      ? FileImage(profileImage!)
+                                      : (profileData?.avatarUrl != null
+                                                ? NetworkImage(profileData!.avatarUrl!)
+                                                : AssetImage(AppImages.imageCover))
+                                            as ImageProvider,
+                                ),
                               ),
-                              child: Image.asset(AppIcons.photoUploadIc, height: 40.h, width: 40.w),
+                              child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: Container(
+                                  padding: EdgeInsets.all(4.w),
+                                  decoration: BoxDecoration(color: AppColors.clr1289FF, shape: BoxShape.circle),
+                                  child: Image.asset(AppIcons.photoUploadIc, height: 16.h, width: 16.w),
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
                     SizedBox(height: 70.h),
-                    _divider(),
-                    _item("Name", "Anurag Sharma"),
-                    _divider(),
-                    _item("Phone", "9876543231"),
-                    _divider(),
-                    _item(
-                      "Bio",
-                      "A Passionate UI/UX Designer with\n1.6 Years of Hands on Experience of\nDelivering Numerous Businesses\nSolutions.",
-                      isMulti: true,
+                    ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: 8,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final fields = [
+                          {"title": "Name", "controller": nameController, "isMulti": false},
+                          {"title": "Phone", "controller": phoneController, "isMulti": false},
+                          {"title": "Bio", "controller": bioController, "isMulti": true},
+                          {"title": "Gender", "controller": genderController, "isMulti": false},
+                          {"title": "Profession", "controller": professionController, "isMulti": false},
+                          {"title": "DOB", "controller": dobController, "isMulti": false},
+                          {"title": "Website", "controller": websiteController, "isMulti": false},
+                          {"title": "Address", "controller": addressController, "isMulti": true},
+                        ];
+
+                        final field = fields[index];
+
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.clr90989B.withOpacity(0.4), width: 0.5)
+                          ),
+                          child: Row(
+                            crossAxisAlignment: field["isMulti"] as bool
+                                ? CrossAxisAlignment.start
+                                : CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 110.w,
+                                child: Text(
+                                  field["title"] as String,
+                                  style: TextStyle(
+                                    color: AppColors.clr141619,
+                                    fontFamily: AppFonts.regular,
+                                    fontSize: 16.sp,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  style: TextStyle(
+                                    color: AppColors.clr2388FF,
+                                    fontFamily: AppFonts.regular,
+                                    fontSize: 16.sp,
+                                  ),
+                                  controller: field["controller"] as TextEditingController,
+                                  maxLines: (field["isMulti"] as bool) ? null : 1,
+                                  textAlignVertical: TextAlignVertical.top,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      vertical: 8.h,
+                                      horizontal: 8.w,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                    _divider(),
-                    _item("Gender", "Male"),
-                    _divider(),
-                    _item("Profession", "UI/UX Designer"),
-                    _divider(),
-                    _item("DOB", "01/01/2001"),
-                    _divider(),
-                    _item("Website", "anurag.io"),
-                    _divider(),
-                    _item("Address", "Vaishali Nagar, Jaipur, Raj 302021", isMulti: true),
-                    SizedBox(height: 20.h),
                   ],
                 ),
               ),

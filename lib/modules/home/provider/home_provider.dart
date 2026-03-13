@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:list_ur_add/modules/home/model/ad_model.dart';
 import 'package:list_ur_add/service/api_logs.dart';
 import 'package:list_ur_add/service/api_service.dart';
+import 'package:list_ur_add/util/utils.dart';
 
 class HomeProvider with ChangeNotifier {
   List<Ads> adsList = [];
@@ -11,16 +12,20 @@ class HomeProvider with ChangeNotifier {
 
   Set<String> bookmarkedAds = {};
 
-  Future<void> fetchAds() async {
-    isLoading = true;
-    notifyListeners();
+  Future<void> fetchAds(BuildContext context, {String? categoryId}) async {
     try {
-      final response = await ApiService.getAds();
+      showProgress(context);
+      notifyListeners();
+
+      final response = await ApiService.getAds(categoryId);
+
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         Log.console("Full Response: ${response.body}");
+
         AdModel model = AdModel.fromJson(decoded);
         adsList = model.data?.ads ?? [];
+
         Log.console("Ads Data: $adsList");
         Log.console("Total Ads: ${adsList.length}");
       } else {
@@ -29,12 +34,16 @@ class HomeProvider with ChangeNotifier {
     } catch (e) {
       Log.console("Error(fetchAds): $e");
     } finally {
-      isLoading = false;
+      if (Navigator.canPop(context)) {
+        closeProgress(context);
+      }
       notifyListeners();
     }
   }
 
   Future<void> fetchLikes() async {
+    isLoading = true;
+    notifyListeners();
     try {
       Log.console("Fetching likes...");
       final response = await ApiService.getLikes();
@@ -43,13 +52,24 @@ class HomeProvider with ChangeNotifier {
         Log.console("Likes API Response: $decoded");
         if (decoded['success'] == true && decoded['data'] != null) {
           List<dynamic> likesData = decoded['data'];
-          for (var adData in likesData) {
-            final index = adsList.indexWhere((ad) => ad.id.toString() == adData['id'].toString());
-            if (index != -1) {
-              adsList[index].likesCount = adData['likes_count'] ?? 0;
-              adsList[index].isLiked = adData['is_liked'] ?? false;
-            }
-          }
+
+          adsList = likesData
+              .map(
+                (adData) => Ads(
+                  id: adData['id'],
+                  categoryName: adData['title'],
+                  description: adData['description'],
+                  city: adData['city'],
+                  price: adData['price'],
+                  currency: adData['currency'],
+                  likesCount: adData['likes_count'] ?? 0,
+                  isLiked: true,
+                  createdAt: adData['created_at'],
+                  thumbnailUrl: adData['thumbnail_url'],
+                ),
+              )
+              .toList();
+
           totalLikes = adsList.fold(0, (sum, ad) => sum + (ad.likesCount ?? 0));
           Log.console("Total Likes: $totalLikes");
           notifyListeners();
@@ -59,6 +79,9 @@ class HomeProvider with ChangeNotifier {
       }
     } catch (e) {
       Log.console("Error(fetchLikes): $e");
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 

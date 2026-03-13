@@ -46,31 +46,27 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget buttonChild = isLoading
-        ? SizedBox(
-      width: 22,
-      height: 22,
-      child: CircularProgressIndicator(color: textColor, strokeWidth: 2.5),
-    )
+        ? SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: textColor, strokeWidth: 2.5))
         : Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (leading != null) ...[leading!, const SizedBox(width: 8)],
-        Flexible(
-          child: Text(
-            buttonName,
-            style: TextStyle(
-              fontSize: fontSize,
-              fontFamily: AppFonts.medium,
-              color: textColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        SizedBox(width: 5.w),
-        if (leading1 != null) ...[leading1!, const SizedBox(width: 8)],
-      ],
-    );
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (leading != null) ...[leading!, SizedBox(width: 12.w)],
+              Flexible(
+                child: Text(
+                  buttonName,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    fontFamily: AppFonts.medium,
+                    color: textColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              SizedBox(width: 5.w),
+              if (leading1 != null) ...[leading1!, const SizedBox(width: 12)],
+            ],
+          );
 
     if (borderGradient != null) {
       return GestureDetector(
@@ -81,18 +77,13 @@ class CustomButton extends StatelessWidget {
           child: Stack(
             children: [
               Container(
-                decoration: BoxDecoration(
-                  gradient: borderGradient,
-                  borderRadius: BorderRadius.circular(borderRadius),
-                ),
+                decoration: BoxDecoration(gradient: borderGradient, borderRadius: BorderRadius.circular(borderRadius)),
               ),
               Container(
                 margin: EdgeInsets.all(borderWidth),
                 decoration: BoxDecoration(
                   color: backgroundGradient == null
-                      ? (isLoading
-                      ? AppColors.mainColor.withOpacity(0.7)
-                      : backgroundColor)
+                      ? (isLoading ? AppColors.mainColor.withOpacity(0.7) : backgroundColor)
                       : null,
                   gradient: backgroundGradient,
                   borderRadius: BorderRadius.circular(borderRadius - borderWidth),
